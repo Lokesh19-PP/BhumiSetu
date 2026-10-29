@@ -116,11 +116,18 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Testing & In-Memory DB -->
+        <!-- H2 In-Memory DB (dev & test) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- H2GIS Spatial Extension for H2 -->
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis</artifactId>
+            <version>2.2.2</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

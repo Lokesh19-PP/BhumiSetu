@@ -12,7 +12,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:bhumisetu_pwd}
     driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: false
@@ -23,6 +23,10 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
+  sql:
+    init:
+      platform: postgresql
+      mode: always
 
 app:
   jwt:

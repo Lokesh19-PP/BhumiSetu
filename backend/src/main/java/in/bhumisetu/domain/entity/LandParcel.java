@@ -48,7 +48,7 @@ public class LandParcel {
     private LandUseType landUse;
 
     // Spatial Polygon geometry in WGS84 (SRID 4326)
-    @Column(columnDefinition = "geometry(Polygon, 4326)", nullable = false)
+    @Column(nullable = false)
     private Polygon boundary;
 
     @OneToMany(mappedBy = "parcel", cascade = CascadeType.ALL, orphanRemoval = true)
