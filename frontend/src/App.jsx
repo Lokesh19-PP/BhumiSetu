@@ -7,6 +7,8 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
+import MapPage from './pages/MapPage';
+
 // Protected Route wrappers
 export function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated, loading } = useAuth();
@@ -56,7 +58,7 @@ function AppRoutes() {
           <Route path="/register" element={<RegisterPage />} />
 
           {/* Map and Parcel routes - implemented in next phases */}
-          <Route path="/map" element={<div className="p-8 text-center text-slate-500">GIS Map Loading...</div>} />
+          <Route path="/map" element={<MapPage />} />
           <Route path="/parcel/:id" element={<div className="p-8 text-center text-slate-500">Parcel Dossier Loading...</div>} />
           <Route path="/search" element={<div className="p-8 text-center text-slate-500">Smart Search Loading...</div>} />
           <Route path="/track" element={<div className="p-8 text-center text-slate-500">Application Tracking Loading...</div>} />
