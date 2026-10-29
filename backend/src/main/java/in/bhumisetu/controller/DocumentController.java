@@ -83,4 +83,14 @@ public class DocumentController {
                 "regNumber", "MH-PUN-REG-89211"
         ));
     }
+
+    @GetMapping("/search")
+    @Operation(summary = "Smart full-text and metadata document search", description = "Searches across OCR digitized text, cadastral metadata, parcel survey numbers, and ULPINs with snippet highlighting")
+    public ResponseEntity<List<in.bhumisetu.dto.search.DocumentSearchResultDto>> searchDocuments(
+            @RequestParam(value = "q", required = false) String query,
+            @RequestParam(value = "documentType", required = false) in.bhumisetu.domain.enums.DocumentType documentType,
+            @RequestParam(value = "village", required = false) String village,
+            @RequestParam(value = "verifiedOnly", required = false) Boolean verifiedOnly) {
+        return ResponseEntity.ok(documentService.searchDocuments(query, documentType, village, verifiedOnly));
+    }
 }

@@ -10,6 +10,7 @@ import RegisterPage from './pages/RegisterPage';
 import MapPage from './pages/MapPage';
 import ParcelDossierPage from './pages/ParcelDossierPage';
 import AiDocumentPage from './pages/AiDocumentPage';
+import SmartSearchPage from './pages/SmartSearchPage';
 
 // Protected Route wrappers
 export function ProtectedRoute({ children, requiredRole }) {
@@ -63,7 +64,7 @@ function AppRoutes() {
           <Route path="/map" element={<MapPage />} />
           <Route path="/parcel/:id" element={<ParcelDossierPage />} />
           <Route path="/digitize" element={<AiDocumentPage />} />
-          <Route path="/search" element={<div className="p-8 text-center text-slate-500">Smart Search Loading...</div>} />
+          <Route path="/search" element={<SmartSearchPage />} />
           <Route path="/track" element={<div className="p-8 text-center text-slate-500">Application Tracking Loading...</div>} />
           <Route path="/track/:appNumber" element={<div className="p-8 text-center text-slate-500">Application Tracking Loading...</div>} />
           <Route path="/apply" element={<div className="p-8 text-center text-slate-500">Application Wizard Loading...</div>} />

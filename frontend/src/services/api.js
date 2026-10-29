@@ -74,8 +74,14 @@ export const documentApi = {
     }),
   verifyMetadata: (id, verifiedData) => api.put(`/documents/${id}/verify`, verifiedData),
   getByParcel: (parcelId) => api.get(`/documents/parcel/${parcelId}`),
-  smartSearch: (query, parcelId, docType) =>
-    api.get('/documents/search', { params: { q: query, parcelId, docType } }),
+  smartSearch: (queryOrParams, docType, village, verifiedOnly) => {
+    if (typeof queryOrParams === 'object') {
+      return api.get('/documents/search', { params: queryOrParams });
+    }
+    return api.get('/documents/search', {
+      params: { q: queryOrParams, documentType: docType, village, verifiedOnly },
+    });
+  },
 };
 
 // Admin & Analytics APIs

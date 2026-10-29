@@ -219,4 +219,137 @@ public class DocumentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Document not found with ID: " + id));
         return DocumentDto.fromEntity(doc);
     }
+
+    @Transactional(readOnly = true)
+    public List<in.bhumisetu.dto.search.DocumentSearchResultDto> searchDocuments(
+            String query,
+            DocumentType documentType,
+            String village,
+            Boolean verifiedOnly) {
+
+        List<Document> allDocs = documentRepository.findAll();
+        String q = query != null ? query.trim().toLowerCase() : "";
+
+        return allDocs.stream()
+                .filter(doc -> {
+                    if (verifiedOnly != null && verifiedOnly && !doc.isVerified()) {
+                        return false;
+                    }
+                    if (documentType != null && doc.getDocumentType() != documentType) {
+                        return false;
+                    }
+                    if (village != null && !village.isBlank() && doc.getParcel() != null) {
+                        if (!doc.getParcel().getVillage().equalsIgnoreCase(village)) {
+                            return false;
+                        }
+                    }
+                    if (q.isEmpty()) {
+                        return true;
+                    }
+                    boolean matchesFullText = doc.getFullText() != null && doc.getFullText().toLowerCase().contains(q);
+                    boolean matchesMeta = doc.getExtractedMetadata() != null && doc.getExtractedMetadata().toLowerCase().contains(q);
+                    boolean matchesFile = doc.getFileName() != null && doc.getFileName().toLowerCase().contains(q);
+                    boolean matchesParcel = doc.getParcel() != null && (
+                            (doc.getParcel().getSurveyNumber() != null && doc.getParcel().getSurveyNumber().toLowerCase().contains(q)) ||
+                            (doc.getParcel().getUlpin() != null && doc.getParcel().getUlpin().toLowerCase().contains(q)) ||
+                            (doc.getParcel().getVillage() != null && doc.getParcel().getVillage().toLowerCase().contains(q))
+                    );
+                    return matchesFullText || matchesMeta || matchesFile || matchesParcel;
+                })
+                .map(doc -> toSearchResult(doc, q))
+                .sorted((a, b) -> Double.compare(b.getMatchScore(), a.getMatchScore()))
+                .collect(Collectors.toList());
+    }
+
+    private in.bhumisetu.dto.search.DocumentSearchResultDto toSearchResult(Document doc, String q) {
+        java.util.List<String> matchedFields = new java.util.ArrayList<>();
+        double score = 1.0;
+        String snippet = "";
+
+        if (doc.getParcel() != null) {
+            if (!q.isEmpty()) {
+                if (doc.getParcel().getSurveyNumber() != null && doc.getParcel().getSurveyNumber().equalsIgnoreCase(q)) {
+                    score += 5.0;
+                    matchedFields.add("surveyNumber");
+                } else if (doc.getParcel().getSurveyNumber() != null && doc.getParcel().getSurveyNumber().toLowerCase().contains(q)) {
+                    score += 3.0;
+                    matchedFields.add("surveyNumber");
+                }
+                if (doc.getParcel().getUlpin() != null && doc.getParcel().getUlpin().toLowerCase().contains(q)) {
+                    score += 4.0;
+                    matchedFields.add("ulpin");
+                }
+                if (doc.getParcel().getVillage() != null && doc.getParcel().getVillage().toLowerCase().contains(q)) {
+                    score += 2.0;
+                    matchedFields.add("village");
+                }
+            }
+        }
+
+        if (!q.isEmpty() && doc.getFileName() != null && doc.getFileName().toLowerCase().contains(q)) {
+            score += 2.0;
+            matchedFields.add("fileName");
+        }
+
+        if (doc.getFullText() != null && !doc.getFullText().isEmpty()) {
+            if (!q.isEmpty() && doc.getFullText().toLowerCase().contains(q)) {
+                score += 3.0;
+                matchedFields.add("fullText");
+                snippet = extractSnippet(doc.getFullText(), q);
+            } else if (snippet.isEmpty()) {
+                snippet = doc.getFullText().length() > 180 ? doc.getFullText().substring(0, 180) + "..." : doc.getFullText();
+            }
+        }
+
+        if (!q.isEmpty() && doc.getExtractedMetadata() != null && doc.getExtractedMetadata().toLowerCase().contains(q)) {
+            matchedFields.add("metadata");
+            score += 2.5;
+        }
+
+        ExtractedMetadataDto metadataDto = null;
+        if (doc.getExtractedMetadata() != null) {
+            try {
+                metadataDto = objectMapper.readValue(doc.getExtractedMetadata(), ExtractedMetadataDto.class);
+            } catch (Exception ignored) {}
+        }
+
+        if (snippet.isEmpty() && metadataDto != null) {
+            snippet = String.format("Survey No: %s | ULPIN: %s | Village: %s | Reg: %s",
+                    doc.getParcel() != null ? doc.getParcel().getSurveyNumber() : "N/A",
+                    doc.getParcel() != null ? doc.getParcel().getUlpin() : "N/A",
+                    doc.getParcel() != null ? doc.getParcel().getVillage() : "N/A",
+                    metadataDto.getRegistrationNumber() != null ? metadataDto.getRegistrationNumber() : "Verified");
+        }
+
+        return in.bhumisetu.dto.search.DocumentSearchResultDto.builder()
+                .id(doc.getId())
+                .parcelId(doc.getParcel() != null ? doc.getParcel().getId() : null)
+                .surveyNumber(doc.getParcel() != null ? doc.getParcel().getSurveyNumber() : null)
+                .ulpin(doc.getParcel() != null ? doc.getParcel().getUlpin() : null)
+                .village(doc.getParcel() != null ? doc.getParcel().getVillage() : null)
+                .taluka(doc.getParcel() != null ? doc.getParcel().getTaluka() : null)
+                .district(doc.getParcel() != null ? doc.getParcel().getDistrict() : null)
+                .documentType(doc.getDocumentType())
+                .documentTypeTitle(doc.getDocumentType() != null ? doc.getDocumentType().getTitle() : "Document")
+                .fileName(doc.getFileName())
+                .filePath(doc.getFilePath())
+                .fileSizeBytes(doc.getFileSizeBytes())
+                .verified(doc.isVerified())
+                .uploadedAt(doc.getUploadedAt())
+                .matchSnippet(snippet)
+                .matchedFields(matchedFields)
+                .extractedMetadata(metadataDto)
+                .matchScore(score)
+                .build();
+    }
+
+    private String extractSnippet(String text, String query) {
+        int index = text.toLowerCase().indexOf(query.toLowerCase());
+        if (index == -1) return text.length() > 180 ? text.substring(0, 180) + "..." : text;
+        int start = Math.max(0, index - 60);
+        int end = Math.min(text.length(), index + query.length() + 80);
+        String prefix = start > 0 ? "..." : "";
+        String suffix = end < text.length() ? "..." : "";
+        return prefix + text.substring(start, end).replaceAll("[\\r\\n]+", " ").trim() + suffix;
+    }
 }
