@@ -15,6 +15,7 @@ import CitizenDashboardPage from './pages/CitizenDashboardPage';
 import ApplicationWizardPage from './pages/ApplicationWizardPage';
 import ApplicationTrackingPage from './pages/ApplicationTrackingPage';
 import OfficerDashboardPage from './pages/OfficerDashboardPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 
 // Protected Route wrappers
 export function ProtectedRoute({ children, requiredRole }) {
@@ -74,7 +75,7 @@ function AppRoutes() {
           <Route path="/apply" element={<ApplicationWizardPage />} />
           <Route path="/dashboard" element={<CitizenDashboardPage />} />
           <Route path="/officer" element={<OfficerDashboardPage />} />
-          <Route path="/admin" element={<div className="p-8 text-center text-slate-500">Admin Analytics Loading...</div>} />
+          <Route path="/admin" element={<AdminDashboardPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
