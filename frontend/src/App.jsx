@@ -11,6 +11,9 @@ import MapPage from './pages/MapPage';
 import ParcelDossierPage from './pages/ParcelDossierPage';
 import AiDocumentPage from './pages/AiDocumentPage';
 import SmartSearchPage from './pages/SmartSearchPage';
+import CitizenDashboardPage from './pages/CitizenDashboardPage';
+import ApplicationWizardPage from './pages/ApplicationWizardPage';
+import ApplicationTrackingPage from './pages/ApplicationTrackingPage';
 
 // Protected Route wrappers
 export function ProtectedRoute({ children, requiredRole }) {
@@ -65,10 +68,10 @@ function AppRoutes() {
           <Route path="/parcel/:id" element={<ParcelDossierPage />} />
           <Route path="/digitize" element={<AiDocumentPage />} />
           <Route path="/search" element={<SmartSearchPage />} />
-          <Route path="/track" element={<div className="p-8 text-center text-slate-500">Application Tracking Loading...</div>} />
-          <Route path="/track/:appNumber" element={<div className="p-8 text-center text-slate-500">Application Tracking Loading...</div>} />
-          <Route path="/apply" element={<div className="p-8 text-center text-slate-500">Application Wizard Loading...</div>} />
-          <Route path="/dashboard" element={<div className="p-8 text-center text-slate-500">Citizen Dashboard Loading...</div>} />
+          <Route path="/track" element={<ApplicationTrackingPage />} />
+          <Route path="/track/:appNumber" element={<ApplicationTrackingPage />} />
+          <Route path="/apply" element={<ApplicationWizardPage />} />
+          <Route path="/dashboard" element={<CitizenDashboardPage />} />
           <Route path="/officer" element={<div className="p-8 text-center text-slate-500">Officer Review Queue Loading...</div>} />
           <Route path="/admin" element={<div className="p-8 text-center text-slate-500">Admin Analytics Loading...</div>} />
 
