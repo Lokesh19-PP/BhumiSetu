@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
 import MapPage from './pages/MapPage';
+import ParcelDossierPage from './pages/ParcelDossierPage';
 
 // Protected Route wrappers
 export function ProtectedRoute({ children, requiredRole }) {
@@ -59,7 +60,7 @@ function AppRoutes() {
 
           {/* Map and Parcel routes - implemented in next phases */}
           <Route path="/map" element={<MapPage />} />
-          <Route path="/parcel/:id" element={<div className="p-8 text-center text-slate-500">Parcel Dossier Loading...</div>} />
+          <Route path="/parcel/:id" element={<ParcelDossierPage />} />
           <Route path="/search" element={<div className="p-8 text-center text-slate-500">Smart Search Loading...</div>} />
           <Route path="/track" element={<div className="p-8 text-center text-slate-500">Application Tracking Loading...</div>} />
           <Route path="/track/:appNumber" element={<div className="p-8 text-center text-slate-500">Application Tracking Loading...</div>} />
