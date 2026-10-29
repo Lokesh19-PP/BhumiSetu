@@ -14,6 +14,7 @@ import SmartSearchPage from './pages/SmartSearchPage';
 import CitizenDashboardPage from './pages/CitizenDashboardPage';
 import ApplicationWizardPage from './pages/ApplicationWizardPage';
 import ApplicationTrackingPage from './pages/ApplicationTrackingPage';
+import OfficerDashboardPage from './pages/OfficerDashboardPage';
 
 // Protected Route wrappers
 export function ProtectedRoute({ children, requiredRole }) {
@@ -72,7 +73,7 @@ function AppRoutes() {
           <Route path="/track/:appNumber" element={<ApplicationTrackingPage />} />
           <Route path="/apply" element={<ApplicationWizardPage />} />
           <Route path="/dashboard" element={<CitizenDashboardPage />} />
-          <Route path="/officer" element={<div className="p-8 text-center text-slate-500">Officer Review Queue Loading...</div>} />
+          <Route path="/officer" element={<OfficerDashboardPage />} />
           <Route path="/admin" element={<div className="p-8 text-center text-slate-500">Admin Analytics Loading...</div>} />
 
           {/* Fallback */}
