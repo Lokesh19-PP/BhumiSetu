@@ -92,6 +92,18 @@ export default function Navbar() {
             </Link>
 
             <Link
+              to="/digitize"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors ${
+                isActive('/digitize')
+                  ? 'bg-blue-50 text-[#0B2545] font-semibold'
+                  : 'hover:bg-slate-100 hover:text-slate-900'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-purple-600" />
+              <span>AI Digitize</span>
+            </Link>
+
+            <Link
               to="/track"
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors ${
                 isActive('/track')
